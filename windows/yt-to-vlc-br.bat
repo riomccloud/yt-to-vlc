@@ -2,22 +2,14 @@
 chcp 65001 > nul
 setlocal enabledelayedexpansion
 title YT-to-VLC v1.0
-set "sw-version=v1.0"
-
-if "%PROCESSOR_ARCHITECTURE%"=="x86" (
-	set "sigcheck=sigcheck.exe"
-) else if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
-    set "sigcheck=sigcheck64.exe"
-) else if "%PROCESSOR_ARCHITECTURE%"=="ARM64" (
-	set "sigcheck=sigcheck64a.exe"
-)
+set "version=v1.0"
 
 :check-internet
 cls
 echo Verificando a conexão com a internet...
-ping -n 1 google.com > NUL
+ping -n 1 youtube.com > NUL
 if not "%errorlevel%"=="1" (
-	goto check-sigcheck
+	goto check-sw-updates
 )
 
 :check-internet-failed
@@ -33,9 +25,9 @@ echo por atualizações e funcionar de maneira geral. No entanto,
 echo parece que sua internet não está funcionando. Por favor,
 echo verifique e tente novamente.
 echo.
-echo Se você tem certeza que sua conexão com a internet está
-echo funcionando, por favor reporte o problema pela seção Issues
-echo do repositório.
+echo Se você tem certeza que sua conexão com a internet está OK,
+echo por favor reporte o problema pela seção Issues do
+echo repositório.
 echo.
 echo O que você deseja fazer?
 echo.
@@ -59,32 +51,18 @@ echo Opção inválida. Digite a tecla desejada e pressione Enter.
 pause > NUL
 goto check-internet-failed
 
-:check-sigcheck
-if not exist "%sigcheck%" (
-	goto install
-) else (
-	goto check-sw-updates
-)
-
-:install
-echo Instalando dependências...
-powershell -command "Invoke-WebRequest -Uri 'https://download.sysinternals.com/files/Sigcheck.zip' -OutFile 'Sigcheck.zip'" > NUL
-powershell -command "Expand-Archive -Path 'Sigcheck.zip' -DestinationPath '%~dp0' -Force"
-del Sigcheck.zip
-echo Dependências instaladas!
-
 :check-sw-updates
 echo Checando por atualizações do script...
-for /f "delims=" %%b in ('powershell -command "Invoke-RestMethod -Uri 'https://api.github.com/repos/riomccloud/yt-to-vlc/releases/latest' | Select-Object -ExpandProperty tag_name"') do (
-    set "sw-latest-version=%%b"
+for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'https://api.github.com/repos/riomccloud/yt-to-vlc/releases/latest' | Select-Object -ExpandProperty tag_name"') do (
+    set "latest-version=%%a"
 )
-if "%sw-latest-version%"=="%sw-version%" (
+if "%latest-version%"=="%version%" (
 	goto check-yt-dlp-updates
 ) else (
-	goto sw-update-warning
+	goto update-warning
 )
 
-:sw-update-warning
+:update-warning
 cls
 echo ============================================================
 echo.
@@ -120,22 +98,15 @@ if "%choice%"=="0" (
 echo.
 echo Opção inválida. Digite a tecla desejada e pressione Enter.
 pause
-goto sw-update-warning
+goto update-warning
 
 :check-yt-dlp-updates
 cls
 echo Checando por atualizações do yt-dlp...
-for /f %%a in ('%sigcheck% -nobanner -n yt-dlp.exe') do (
-    set "yt-dlp-local-version=%%a"
+if not exist "yt-dlp.exe" (
+	powershell -command "Invoke-WebRequest -Uri 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe' -OutFile 'yt-dlp.exe'" > NUL
 )
-for /f "delims=" %%b in ('powershell -command "Invoke-RestMethod -Uri 'https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest' | Select-Object -ExpandProperty tag_name"') do (
-    set "yt-dlp-latest-version=%%b"
-)
-if "%yt-dlp-latest-version%"=="%yt-dlp-local-version%" (
-	goto check-vlc
-)
-echo Baixando nova versão do yt-dlp...
-powershell -command "Invoke-WebRequest -Uri 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe' -OutFile 'yt-dlp.exe'" > NUL
+yt-dlp.exe -U > NUL
 
 if not exist "settings.txt" (
 	echo res=1080> "settings.txt"

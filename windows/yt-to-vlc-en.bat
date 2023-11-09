@@ -1,22 +1,14 @@
 @echo off
 setlocal enabledelayedexpansion
 title YT-to-VLC v1.0
-set "sw-version=v1.0"
-
-if "%PROCESSOR_ARCHITECTURE%"=="x86" (
-	set "sigcheck=sigcheck.exe"
-) else if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
-    set "sigcheck=sigcheck64.exe"
-) else if "%PROCESSOR_ARCHITECTURE%"=="ARM64" (
-	set "sigcheck=sigcheck64a.exe"
-)
+set "version=v1.0"
 
 :check-internet
 cls
 echo Checking internet connection...
-ping -n 1 google.com > NUL
+ping -n 1 youtube.com > NUL
 if not "%errorlevel%"=="1" (
-	goto check-sigcheck
+	goto check-sw-updates
 )
 
 :check-internet-failed
@@ -56,32 +48,18 @@ echo Invalid option. Type the desired key and press Enter.
 pause > NUL
 goto check-internet-failed
 
-:check-sigcheck
-if not exist "%sigcheck%" (
-	goto install
-) else (
-	goto check-sw-updates
-)
-
-:install
-echo Installing dependencies...
-powershell -command "Invoke-WebRequest -Uri 'https://download.sysinternals.com/files/Sigcheck.zip' -OutFile 'Sigcheck.zip'" > NUL
-powershell -command "Expand-Archive -Path 'Sigcheck.zip' -DestinationPath '%~dp0' -Force"
-del Sigcheck.zip
-echo Dependencies installed!
-
 :check-sw-updates
 echo Checking for script updates...
-for /f "delims=" %%b in ('powershell -command "Invoke-RestMethod -Uri 'https://api.github.com/repos/riomccloud/yt-to-vlc/releases/latest' | Select-Object -ExpandProperty tag_name"') do (
-    set "sw-latest-version=%%b"
+for /f "delims=" %%a in ('powershell -command "Invoke-RestMethod -Uri 'https://api.github.com/repos/riomccloud/yt-to-vlc/releases/latest' | Select-Object -ExpandProperty tag_name"') do (
+    set "latest-version=%%a"
 )
-if "%sw-latest-version%"=="%sw-version%" (
+if "%latest-version%"=="%version%" (
 	goto check-yt-dlp-updates
 ) else (
-	goto sw-update-warning
+	goto update-warning
 )
 
-:sw-update-warning
+:update-warning
 cls
 echo ============================================================
 echo.
@@ -117,22 +95,15 @@ if "%choice%"=="0" (
 echo.
 echo Invalid option. Type the desired key and press Enter.
 pause
-goto sw-update-warning
+goto update-warning
 
 :check-yt-dlp-updates
 cls
 echo Checking for yt-dlp updates...
-for /f %%a in ('%sigcheck% -nobanner -n yt-dlp.exe') do (
-    set "yt-dlp-local-version=%%a"
+if not exist "yt-dlp.exe" (
+	powershell -command "Invoke-WebRequest -Uri 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe' -OutFile 'yt-dlp.exe'" > NUL
 )
-for /f "delims=" %%b in ('powershell -command "Invoke-RestMethod -Uri 'https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest' | Select-Object -ExpandProperty tag_name"') do (
-    set "yt-dlp-latest-version=%%b"
-)
-if "%yt-dlp-latest-version%"=="%yt-dlp-local-version%" (
-	goto check-vlc
-)
-echo Downloading new yt-dlp version...
-powershell -command "Invoke-WebRequest -Uri 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe' -OutFile 'yt-dlp.exe'" > NUL
+yt-dlp.exe -U > NUL
 
 if not exist "settings.txt" (
 	echo res=1080> "settings.txt"
