@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 > nul
 setlocal enabledelayedexpansion
 title YT-to-VLC v1.0
 set "sw-version=v1.0"
@@ -13,7 +14,7 @@ if "%PROCESSOR_ARCHITECTURE%"=="x86" (
 
 :check-internet
 cls
-echo Checking internet connection...
+echo Verificando a conexão com a internet...
 ping -n 1 google.com > NUL
 if not "%errorlevel%"=="1" (
 	goto check-sigcheck
@@ -25,24 +26,26 @@ echo ============================================================
 echo.
 echo ..:: YT-TO-VLC v1.0 ::..
 echo.
-echo INTERNET CONNECTION UNAVAILABLE
+echo CONEXÃO COM A INTERNET INDISPONÍVEL
 echo.
-echo YT-to-VLC needs an internet connection to check for updates
-echo and work in general. However, it seems that your internet
-echo isn't working. Please check it and try again.
+echo O YT-to-VLC precisa estar conectado a internet para procurar
+echo por atualizações e funcionar de maneira geral. No entanto,
+echo parece que sua internet não está funcionando. Por favor,
+echo verifique e tente novamente.
 echo.
-echo If you are sure that your network is fine, please report the
-echo problem through the Issues section of the repository.
+echo Se você tem certeza que sua conexão com a internet está
+echo funcionando, por favor reporte o problema pela seção Issues
+echo do repositório.
 echo.
-echo What do you want to do?
+echo O que você deseja fazer?
 echo.
-echo [1] Check for internet connection again
-echo [0] Exit
+echo [1] Verificar a conexão com a internet novamente
+echo [0] Sair
 echo.
 echo ============================================================
 echo.
 
-set /p choice=Choose an option: 
+set /p choice=Escolha uma opção: 
 
 if "%choice%"=="1" (
 	goto check-internet
@@ -52,7 +55,7 @@ if "%choice%"=="0" (
 )
 
 echo.
-echo Invalid option. Type the desired key and press Enter.
+echo Opção inválida. Digite a tecla desejada e pressione Enter.
 pause > NUL
 goto check-internet-failed
 
@@ -64,14 +67,14 @@ if not exist "%sigcheck%" (
 )
 
 :install
-echo Installing dependencies...
+echo Instalando dependências...
 powershell -command "Invoke-WebRequest -Uri 'https://download.sysinternals.com/files/Sigcheck.zip' -OutFile 'Sigcheck.zip'" > NUL
 powershell -command "Expand-Archive -Path 'Sigcheck.zip' -DestinationPath '%~dp0' -Force"
 del Sigcheck.zip
-echo Dependencies installed!
+echo Dependências instaladas!
 
 :check-sw-updates
-echo Checking for script updates...
+echo Checando por atualizações do script...
 for /f "delims=" %%b in ('powershell -command "Invoke-RestMethod -Uri 'https://api.github.com/repos/riomccloud/yt-to-vlc/releases/latest' | Select-Object -ExpandProperty tag_name"') do (
     set "sw-latest-version=%%b"
 )
@@ -87,22 +90,22 @@ echo ============================================================
 echo.
 echo ..:: YT-TO-VLC v1.0 ::..
 echo.
-echo NEW VERSION FOUND
+echo NOVA VERSÃO ENCONTRADA
 echo.
-echo There's a new YT-to-VLC version available. New versions
-echo usually bring improvements and bug fixes.
+echo Há uma nova versão do YT-to-VLC disponível. Novas versões
+echo costumam trazer melhorias e correções de bugs.
 echo.
-echo What do you want to do?
+echo O que você deseja fazer?
 echo.
-echo [1] Download latest release
-echo [2] Continue without updating it
+echo [1] Baixar a versão mais recente
+echo [2] Continuar sem atualizar
 echo.
-echo [0] Exit
+echo [0] Sair
 echo.
 echo ============================================================
 echo.
 
-set /p choice=Choose an option: 
+set /p choice=Escolha uma opção: 
 
 if "%choice%"=="1" (
 	start https://github.com/riomccloud/yt-to-vlc/releases/latest
@@ -115,13 +118,13 @@ if "%choice%"=="0" (
 )
 
 echo.
-echo Invalid option. Type the desired key and press Enter.
+echo Opção inválida. Digite a tecla desejada e pressione Enter.
 pause
 goto sw-update-warning
 
 :check-yt-dlp-updates
 cls
-echo Checking for yt-dlp updates...
+echo Checando por atualizações do yt-dlp...
 for /f %%a in ('%sigcheck% -nobanner -n yt-dlp.exe') do (
     set "yt-dlp-local-version=%%a"
 )
@@ -131,7 +134,7 @@ for /f "delims=" %%b in ('powershell -command "Invoke-RestMethod -Uri 'https://a
 if "%yt-dlp-latest-version%"=="%yt-dlp-local-version%" (
 	goto check-vlc
 )
-echo Downloading new yt-dlp version...
+echo Baixando nova versão do yt-dlp...
 powershell -command "Invoke-WebRequest -Uri 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe' -OutFile 'yt-dlp.exe'" > NUL
 
 if not exist "settings.txt" (
@@ -163,27 +166,27 @@ echo ============================================================
 echo.
 echo ..:: YT-to-VLC v1.0 ::..
 echo.
-echo VLC NOT FOUND
+echo VLC NÃO ENCONTRADO
 echo.
-echo Unable to locate VLC media player in the default
-echo installation paths. If you don't have VLC installed, please
-echo download it at videolan.org.
+echo Não foi possível localizar o reprodutor de mídias VLC nos
+echo caminhos padrões de instalação. Se você não possui o VLC
+echo instalado, por favor baixe-o através do site videolan.org.
 echo.
-echo If you installed VLC media player in a different path, type
-echo the full path to the folder that contains the program's
-echo executable, following the example below:
+echo Se você instalou o reprodutor de mídias VLC em um diretório
+echo diferente, digite o caminho completo para a pasta que contém
+echo o executável do programa, seguindo o exemplo abaixo:
 echo.
-echo D:\vlc-folder
+echo D:\pasta-do-vlc
 echo.
-echo * do not use quotes *
+echo * não use aspas *
 echo.
-echo [1] Verify again
-echo [0] Exit
+echo [1] Verificar novamente
+echo [0] Sair
 echo.
 echo ============================================================
 echo.
 
-set /p choice=Choose an option: 
+set /p choice=Escolha uma opção: 
 
 if "%choice%"=="1" (
     goto check-vlc
@@ -196,7 +199,7 @@ if "%choice%"=="1" (
 		goto home
 	) else (
 		echo.
-		echo Invalid path^^! Check the directory and try again.
+		echo Caminho inválido^^! Verifique o diretório e tente novamente.
 		pause > NUL
 		goto vlc-not-found
 	)
@@ -209,16 +212,16 @@ echo ============================================================
 echo.
 echo ..:: YT-to-VLC v1.0 ::..
 echo.
-echo To play a video, paste its YouTube URL below.
+echo Para reproduzir um vídeo, cole sua URL do YouTube abaixo.
 echo.
-echo [1] Settings
-echo [2] About
-echo [0] Exit
+echo [1] Configurações
+echo [2] Sobre
+echo [0] Sair
 echo.
 echo ============================================================
 echo.
 
-set /p choice=Choose an option: 
+set /p choice=Escolha uma opção: 
 
 if "%choice%"=="1" (
     goto settings
@@ -240,25 +243,25 @@ echo ============================================================
 echo.
 echo ..:: YT-to-VLC v1.0 ::..
 echo.
-echo SETTINGS
+echo CONFIGURAÇÔES
 echo.
-echo Select the desired video quality:
+echo Selecione a qualidade de vídeo desejada:
 echo.
 echo [1] 4320p (8k)
 echo [2] 2160p (4k)
 echo [3] 1440p (2k)
-echo [4] 1080p (Full HD, default)
+echo [4] 1080p (Full HD, padrão)
 echo [5] 720p (HD)
 echo [6] 480p (SD)
 echo [7] 360p (SD)
 echo.
-echo [9] Return to the previous menu
-echo [0] Exit
+echo [9] Voltar para o menu anterior
+echo [0] Sair
 echo.
 echo ============================================================
 echo.
 
-set /p choice=Choose an option: 
+set /p choice=Escolha uma opção: 
 
 if "%choice%"=="1" (
 	echo res=4320> "settings.txt"
@@ -289,7 +292,7 @@ if "%choice%"=="0" (
 )
 
 echo.
-echo New video quality set^^! Returning to the previous menu...
+echo Novo padrão de qualidade de vídeo definido^^! Voltando para o menu anterior...
 timeout 3 > NUL
 goto home
 
@@ -300,19 +303,19 @@ echo ============================================================
 echo.
 echo ..:: YT-TO-VLC v1.0 ::..
 echo.
-echo ABOUT
+echo SOBRE
 echo.
-echo YT-to-VLC is a small bash/batch tool that automates the
-echo process of playing videos from YouTube and other sites in
-echo VLC media player through yt-dlp.
+echo O YT-to-VLC é uma pequena ferramenta bash/batch que
+echo automatiza o processo de reprodução de vídeos do YouTube e
+echo outros sites no reprodutor de mídias VLC através do yt-dlp.
 echo.
-echo YT-to-VLC is licensed under AGPL-3.0 license.
+echo O YT-to-VLC é distribuído sobre a licença AGPL-3.0.
 echo.
-echo Made by Rio McCloud, since 2023.
-echo Check it out at https://github.com/riomccloud/yt-to-vlc
+echo Feito por Rio McCloud, desde 2023.
+echo Confira mais em https://github.com/riomccloud/yt-to-vlc
 echo.
 echo ============================================================
 echo.
-echo Press any key to go back...
+echo Pressione qualquer botão para voltar...
 pause > NUL
 goto home
