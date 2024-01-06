@@ -8,14 +8,36 @@ This script is made with less advanced users in mind. Tech savvy users normally 
 
 ## Features
 * Simple, efficient and lightweight
-* Translations to various languages (help appreciated!)
 * Automatically download and install yt-dlp updates
 * Supports YouTube and [all other sites supported by yt-dlp](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
 * Allows the user to select a specific video resolution
-* Works with regular videos and livestreams
+* Works with regular videos
+* Can be used to open videos directly from the web browser
+
+## Web browser integration
+With the package, there's a .reg file. Edit it with Notepad (or your favorite text editor) and replace the last line with the path to the directory you stored YT-to-VLC. Save and merge it. Follow the example below:
+
+`@="\"C:\\yt-to-vlc\\yt-to-vlc.bat\" %1"`
+
+Now, use the [Redirector](https://github.com/einaregilsson/Redirector) extension ([Chrome-based browsers](https://chromewebstore.google.com/detail/redirector/ocgpenflpmgnfapjedencafcfakcekcd), [Edge](https://microsoftedge.microsoft.com/addons/detail/redirector/jdhdjbcalnfbmfdpfggcogaegfcjdcfp), [Firefox](https://addons.mozilla.org/firefox/addon/redirector)) to create the following rules:
+
+**Rule 1:** YouTube videos  
+**Example URL:** `https://www.youtube.com/watch?v=`  
+**Include pattern:** `https://www.youtube.com/watch?v=*`  
+**Redirect to:** `yttovlc://http://youtu.be/$1`  
+**Advanced options, Apply to:** check every box
+
+**Rule 2:** YouTube Shorts  
+**Example URL:** `https://www.youtube.com/shorts/`  
+**Include pattern:** `https://www.youtube.com/shorts/*`  
+**Redirect to:** `yttovlc://http://youtu.be/$1`  
+**Advanced options, Apply to:** check every box
+
+After that, you're ready.
 
 ## To-do
 - [ ] Create bash version for Linux distros
+- [ ] Find a way to play videos in resolutions higher than 720p
 
 ## Contribute
 * Report bugs and suggest improvements through Issues, Pull Requests and Discussions
