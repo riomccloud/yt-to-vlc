@@ -1,0 +1,11 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\yttovlc]
+"URL Protocol"=""
+
+[HKEY_CLASSES_ROOT\yttovlc\shell]
+
+[HKEY_CLASSES_ROOT\yttovlc\shell\open]
+
+[HKEY_CLASSES_ROOT\yttovlc\shell\open\command]
+@="\"insert:\\the\\path\\to\\the\\script\\here.bat\" %1"
