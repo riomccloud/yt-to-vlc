@@ -17,7 +17,7 @@ This script is made with less advanced users in mind. Tech savvy users normally 
 ## Web browser integration
 With the package, there's a .reg file. Edit it with Notepad (or your favorite text editor) and replace the last line with the path to the directory you stored YT-to-VLC. Save and merge it. Follow the example below:
 
-`@="\"C:\\yt-to-vlc\\yt-to-vlc.bat\" %1"`
+`@="\"C:\\yt-to-vlc\\yt-to-vlc-runner.bat\" %1"`
 
 Now, use the [Redirector](https://github.com/einaregilsson/Redirector) extension ([Chrome-based browsers](https://chromewebstore.google.com/detail/redirector/ocgpenflpmgnfapjedencafcfakcekcd), [Edge](https://microsoftedge.microsoft.com/addons/detail/redirector/jdhdjbcalnfbmfdpfggcogaegfcjdcfp), [Firefox](https://addons.mozilla.org/firefox/addon/redirector)) to create the following rules:
 
